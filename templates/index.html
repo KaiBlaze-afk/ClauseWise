@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="grid grid-2">
+    <!-- Upload Section -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Upload Document</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="documentForm">
+                <div class="file-upload-area" onclick="document.getElementById('file').click();">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Drop your legal document here</h3>
+                    <p class="text-muted">or click to browse</p>
+                    <div class="file-name mt-2"></div>
+                    <input type="file" id="file" name="file" accept=".pdf,.docx,.txt" style="display: none;" onchange="updateFileName(this)">
+                </div>
+                
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        Supported formats: PDF, DOCX, TXT (max 16MB)
+                    </small>
+                </div>
+
+                <!-- OR Divider -->
+                <div style="margin: 2rem 0; text-align: center; position: relative;">
+                    <div style="border-top: 1px solid var(--border); position: absolute; top: 50%; left: 0; right: 0;"></div>
+                    <span style="background: white; padding: 0 1rem; color: var(--text-light); font-size: 0.875rem; font-weight: 500;">OR</span>
+                </div>
+
+                <!-- Text Input Section -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-edit"></i> Paste Document Text
+                    </label>
+                    <textarea 
+                        class="form-control" 
+                        id="document_text" 
+                        name="document_text" 
+                        rows="8" 
+                        placeholder="Paste your legal document content here..."
+                        style="resize: vertical; min-height: 200px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 0.9rem;"
+                        oninput="handleTextInput(this)"></textarea>
+                    <small class="text-muted mt-2" style="display: block;">
+                        <i class="fas fa-keyboard"></i>
+                        Type or paste your document content directly into this field
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="analyzeBtn">
+                    <i class="fas fa-magic"></i>
+                    Analyze Document
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-star"></i> Key Features</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div style="background: rgba(37, 99, 235, 0.1); padding: 0.75rem; border-radius: 8px; flex-shrink: 0;">
+                            <i class="fas fa-language" style="color: var(--primary); font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text); margin-bottom: 0.5rem;">Clause Simplification</h4>
+                            <p class="text-muted">Automatically rewrites complex legal clauses into simplified, layman-friendly language for better comprehension.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div style="background: rgba(5, 150, 105, 0.1); padding: 0.75rem; border-radius: 8px; flex-shrink: 0;">
+                            <i class="fas fa-search" style="color: var(--success); font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text); margin-bottom: 0.5rem;">Named Entity Recognition</h4>
+                            <p class="text-muted">Identifies and extracts key legal entities such as parties, dates, obligations, monetary values, and legal terms.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div style="background: rgba(217, 119, 6, 0.1); padding: 0.75rem; border-radius: 8px; flex-shrink: 0;">
+                            <i class="fas fa-file-contract" style="color: var(--warning); font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text); margin-bottom: 0.5rem;">Document Classification</h4>
+                            <p class="text-muted">Automatically identifies the type of legal document (NDA, Employment Agreement, etc.) using AI.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div style="background: rgba(220, 38, 38, 0.1); padding: 0.75rem; border-radius: 8px; flex-shrink: 0;">
+                            <i class="fas fa-list-alt" style="color: var(--danger); font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text); margin-bottom: 0.5rem;">Clause Extraction</h4>
+                            <p class="text-muted">Smart segmentation of documents into individual clauses for detailed analysis and review.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-lightbulb"></i> Usage Tips</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--success); margin-top: 0.25rem;"></i>
+                        <p><strong>File Upload:</strong> Best for formatted documents (PDF, DOCX, TXT)</p>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--success); margin-top: 0.25rem;"></i>
+                        <p><strong>Text Input:</strong> Perfect for copying from emails, websites, or other sources</p>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--success); margin-top: 0.25rem;"></i>
+                        <p><strong>Either Method:</strong> Works equally well - choose what's most convenient</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    <i class="fas fa-lightbulb"></i>
+    <div>
+        <strong>Tip:</strong> Make sure Ollama is running locally and your chosen model is available. 
+        You can check available models by running <code>ollama list</code> in your terminal.
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateFileName(input) {
+        const fileName = input.files[0]?.name || '';
+        const fileNameDiv = document.querySelector('.file-name');
+        const textArea = document.getElementById('document_text');
+        
+        if (fileName) {
+            fileNameDiv.innerHTML = `<strong>Selected:</strong> ${fileName}`;
+            fileNameDiv.style.color = 'var(--success)';
+            // Clear text area when file is selected
+            textArea.value = '';
+            updateAnalyzeButton();
+        }
+    }
+
+    function handleTextInput(textarea) {
+        const fileInput = document.getElementById('file');
+        const fileNameDiv = document.querySelector('.file-name');
+        
+        if (textarea.value.trim()) {
+            // Clear file input when text is entered
+            fileInput.value = '';
+            fileNameDiv.innerHTML = '';
+        }
+        updateAnalyzeButton();
+    }
+
+    function updateAnalyzeButton() {
+        const fileInput = document.getElementById('file');
+        const textArea = document.getElementById('document_text');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        
+        const hasFile = fileInput.files && fileInput.files.length > 0;
+        const hasText = textArea.value.trim().length > 0;
+        
+        if (hasFile || hasText) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.style.opacity = '1';
+        } else {
+            analyzeBtn.disabled = false; // Keep enabled but show different state
+            analyzeBtn.style.opacity = '1';
+        }
+    }
+
+    // Form validation
+    document.getElementById('documentForm').addEventListener('submit', function(e) {
+        const fileInput = document.getElementById('file');
+        const textArea = document.getElementById('document_text');
+        
+        const hasFile = fileInput.files && fileInput.files.length > 0;
+        const hasText = textArea.value.trim().length > 0;
+        
+        if (!hasFile && !hasText) {
+            e.preventDefault();
+            alert('Please either upload a file or enter document text before analyzing.');
+            return false;
+        }
+        
+        // If user has text input, remove the required attribute from file input
+        if (hasText) {
+            fileInput.removeAttribute('required');
+        }
+        
+        // Show loading state
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        analyzeBtn.innerHTML = '<div class="spinner"></div> Analyzing...';
+        analyzeBtn.disabled = true;
+    });
+
+    // Initialize button state
+    document.addEventListener('DOMContentLoaded', function() {
+        updateAnalyzeButton();
+    });
+</script>
+{% endblock %}

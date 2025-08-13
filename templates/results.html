@@ -1,0 +1,828 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - ClauseWise{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tool-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        height: calc(100vh - 120px);
+        max-height: calc(100vh - 120px);
+    }
+
+    .main-panel {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin: 10px;
+    }
+
+    .side-panel {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin: 10px;
+    }
+
+    .panel-header {
+        background: var(--gradient);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .panel-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+    }
+
+    .tab-nav {
+        display: flex;
+        background: var(--light);
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn.active {
+        background: white;
+        border-bottom-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .tab-content {
+        display: none;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .tab-content.active {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .entity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .entity-card {
+        background: var(--light);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border);
+        transition: transform 0.2s ease;
+    }
+
+    .entity-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .entity-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .entity-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .entity-items {
+        max-height: 80px;
+        overflow-y: auto;
+        font-size: 0.8rem;
+        text-align: left;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+    }
+
+    .clause-container {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .clause-card {
+        background: var(--light);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    .clause-header {
+        padding: 1rem;
+        background: white;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .clause-header:hover {
+        background: rgba(37, 99, 235, 0.02);
+    }
+
+    .clause-title {
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .clause-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .clause-body {
+        padding: 1rem;
+        display: none;
+        background: white;
+    }
+
+    .clause-body.active {
+        display: block;
+    }
+
+    .clause-text {
+        background: var(--light);
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary);
+        margin-bottom: 1rem;
+        white-space: pre-wrap;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    .simplified-result {
+        background: rgba(5, 150, 105, 0.05);
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--success);
+        margin-top: 1rem;
+    }
+
+    /* Chat Interface */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        max-width: 85%;
+        padding: 0.75rem 1rem;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .message.user {
+        background: var(--primary);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant {
+        background: var(--light);
+        color: var(--text);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        border: 1px solid var(--border);
+    }
+
+    .chat-input-container {
+        padding: 1rem;
+        border-top: 1px solid var(--border);
+        background: var(--light);
+    }
+
+    .chat-input-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        resize: none;
+        font-family: inherit;
+        font-size: 0.9rem;
+        max-height: 100px;
+        min-height: 40px;
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .send-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+        background: var(--primary-dark);
+        transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+        background: var(--secondary);
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        color: var(--text-light);
+        font-style: italic;
+    }
+
+    .typing-dots {
+        display: flex;
+        gap: 2px;
+    }
+
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-light);
+        animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+        30% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    .quick-questions {
+        padding: 1rem;
+        border-top: 1px solid var(--border);
+        background: white;
+    }
+
+    .quick-question-btn {
+        display: block;
+        width: 100%;
+        background: none;
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        text-align: left;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--text);
+    }
+
+    .quick-question-btn:hover {
+        background: var(--light);
+        border-color: var(--primary);
+    }
+
+    .doc-info-header {
+        padding: 1rem 1.5rem;
+        background: white;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .doc-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .doc-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        color: white;
+    }
+
+    .collapse-icon {
+        transition: transform 0.3s ease;
+        font-size: 0.8rem;
+    }
+
+    .collapse-icon.rotated {
+        transform: rotate(180deg);
+    }
+    .badge-primary{
+        background-color: white;
+        padding: 2px 5px;
+    }
+    .badge-success{
+        background-color: white;
+        padding: 2px 5px;
+    }
+
+    @media (max-width: 1200px) {
+        .tool-layout {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+        }
+        
+        .side-panel {
+            order: -1;
+            height: 300px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .entity-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .clause-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tool-layout">
+    <!-- Main Analysis Panel -->
+    <div class="main-panel">
+        <div class="panel-header">
+            <i class="fas fa-file-contract"></i>
+            <div>
+                <div class="doc-title">{{ filename }}</div>
+                <div class="doc-badges">
+                    <span class="badge badge-primary">{{ doc_type }}</span>
+                    <span class="badge badge-success">{{ clauses|length }} Clauses</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('entities')">
+                <i class="fas fa-search"></i> Entities
+            </button>
+            <button class="tab-btn" onclick="switchTab('clauses')">
+                <i class="fas fa-list-alt"></i> Clauses
+            </button>
+            <button class="tab-btn" onclick="switchTab('raw')">
+                <i class="fas fa-file-text"></i> Raw Text
+            </button>
+        </div>
+
+        <!-- Entities Tab -->
+        <div class="tab-content active" id="entities-tab">
+            <div class="entity-grid">
+                {% for entity_type, entity_list in entities.items() %}
+                <div class="entity-card" onclick="showEntityDetails('{{ entity_type }}', {{ entity_list|tojson|e }})">
+                    <div class="entity-header">
+                        <div class="entity-icon {{ entity_type }}">
+                            {% if entity_type == 'dates' %}
+                                <i class="fas fa-calendar-alt"></i>
+                            {% elif entity_type == 'monetary_values' %}
+                                <i class="fas fa-dollar-sign"></i>
+                            {% elif entity_type == 'emails' %}
+                                <i class="fas fa-envelope"></i>
+                            {% elif entity_type == 'phones' %}
+                                <i class="fas fa-phone"></i>
+                            {% elif entity_type == 'parties' %}
+                                <i class="fas fa-users"></i>
+                            {% elif entity_type == 'obligations' %}
+                                <i class="fas fa-clipboard-check"></i>
+                            {% elif entity_type == 'legal_terms' %}
+                                <i class="fas fa-gavel"></i>
+                            {% endif %}
+                        </div>
+                        <div class="entity-count">{{ entity_list|length }}</div>
+                        <div class="entity-label">{{ entity_type.replace('_', ' ') }}</div>
+                        {% if entity_list|length > 0 %}
+                            <span class="entity-badge">Click to explore</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if entity_list %}
+                        <div class="entity-body">
+                            <div class="entity-list">
+                                {% for entity in entity_list[:4] %}
+                                <div class="entity-item 
+                                    {%- if entity_type == 'monetary_values' %} monetary
+                                    {%- elif entity_type == 'dates' %} date
+                                    {%- elif entity_type in ['emails', 'phones'] %} contact
+                                    {%- elif entity_type == 'legal_terms' %} legal
+                                    {%- elif entity_type == 'obligations' %} obligation
+                                    {%- elif entity_type == 'parties' %} party
+                                    {%- endif %}">
+                                    {{ entity }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if entity_list|length > 4 %}
+                                <div class="entity-more">
+                                    <i class="fas fa-plus-circle"></i>
+                                    {{ entity_list|length - 4 }} more {{ entity_type.replace('_', ' ') }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="entity-empty">
+                            <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block; opacity: 0.3;"></i>
+                            No {{ entity_type.replace('_', ' ') }} found
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Clauses Tab -->
+        <div class="tab-content" id="clauses-tab">
+            <div class="clause-container">
+                {% for clause in clauses %}
+                <div class="clause-card" data-clause-index="{{ loop.index0 }}">
+                    <div class="clause-header" onclick="toggleClause({{ loop.index0 }})">
+                        <h4 class="clause-title">
+                            <i class="fas fa-paragraph"></i>
+                            Clause {{ loop.index }}
+                            <i class="fas fa-chevron-down collapse-icon" id="collapse-{{ loop.index0 }}"></i>
+                        </h4>
+                        <div class="clause-actions" onclick="event.stopPropagation()">
+                            <button class="btn btn-primary btn-sm" onclick="simplifyClause({{ loop.index0 }}, this)" data-clause="{{ clause|e }}">
+                                <i class="fas fa-magic"></i> Simplify
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="askAboutClause({{ loop.index0 }})">
+                                <i class="fas fa-question-circle"></i> Ask AI
+                            </button>
+                        </div>
+                    </div>
+                    <div class="clause-body" id="clause-body-{{ loop.index0 }}">
+                        <div class="clause-text">{{ clause }}</div>
+                        <div class="loading-clause" style="display: none;">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                <span>Processing with AI...</span>
+                            </div>
+                        </div>
+                        <div class="simplified-result" style="display: none;">
+                            <strong style="color: var(--success); display: block; margin-bottom: 0.5rem;">
+                                <i class="fas fa-check-circle"></i> Simplified:
+                            </strong>
+                            <div class="simplified-text"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Raw Text Tab -->
+        <div class="tab-content" id="raw-tab">
+            <div style="padding: 1.5rem; font-family: monospace; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap; background: var(--light); margin: 1rem; border-radius: 8px; height: calc(100% - 2rem); overflow-y: auto;">{{ raw_text }}</div>
+        </div>
+    </div>
+
+    <!-- AI Chat Panel -->
+    <div class="side-panel">
+        <div class="panel-header">
+            <i class="fas fa-robot"></i>
+            <span>Legal AI Assistant</span>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <strong style="display: block; margin-bottom: 0.5rem;">👋 Welcome!</strong>
+                    I'm your legal AI assistant. I've analyzed your document and can help answer questions about:
+                    <br><br>
+                    • Document contents and clauses<br>
+                    • Legal implications and risks<br>
+                    • Suggested next steps<br>
+                    • General legal guidance<br>
+                    <br>
+                    <small><em>Note: This is general guidance. Always consult a qualified attorney for specific legal advice.</em></small>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span>AI is thinking...</span>
+            </div>
+
+            <div class="chat-input-container">
+                <label class="input-label">
+                    <i class="fas fa-keyboard"></i>
+                    Ask your own question:
+                </label>
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="chatInput" 
+                        class="chat-input" 
+                        placeholder="Type your question here..."
+                        rows="1"
+                        onkeydown="handleChatKeydown(event)"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="quick-questions">
+                <small style="color: var(--text-light); margin-bottom: 0.75rem; display: block; font-weight: 500;">
+                    <i class="fas fa-lightbulb" style="margin-right: 0.25rem;"></i>
+                    Suggested Questions:
+                </small>
+                <button class="quick-question-btn" onclick="askQuickQuestion('What are the key obligations in this document?')">
+                    <i class="fas fa-clipboard-list"></i>
+                    What are the key obligations?
+                </button>
+                <button class="quick-question-btn" onclick="askQuickQuestion('What are the potential risks or liabilities?')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    What are the potential risks?
+                </button>
+                <button class="quick-question-btn" onclick="askQuickQuestion('What should I do next?')">
+                    <i class="fas fa-arrow-right"></i>
+                    What should I do next?
+                </button>
+                <button class="quick-question-btn" onclick="askQuickQuestion('Are there any important deadlines?')">
+                    <i class="fas fa-calendar-alt"></i>
+                    Are there important deadlines?
+                </button>
+                <button class="quick-question-btn" onclick="askQuickQuestion('Explain this document in simple terms')">
+                    <i class="fas fa-language"></i>
+                    Explain in simple terms
+                </button>
+                <button class="quick-question-btn" onclick="askQuickQuestion('What clauses should I pay special attention to?')">
+                    <i class="fas fa-eye"></i>
+                    Important clauses to review
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const settings = {{ settings|tojson }};
+    const documentText = {{ raw_text|tojson }};
+    const documentEntities = {{ entities|tojson }};
+    const clauses = {{ clauses|tojson }};
+    let chatHistory = [];
+
+    // Tab switching
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+    // Clause management
+    function toggleClause(index) {
+        const body = document.getElementById(`clause-body-${index}`);
+        const icon = document.getElementById(`collapse-${index}`);
+        
+        if (body.classList.contains('active')) {
+            body.classList.remove('active');
+            icon.classList.remove('rotated');
+        } else {
+            body.classList.add('active');
+            icon.classList.add('rotated');
+        }
+    }
+
+    // Clause simplification
+    async function simplifyClause(index, button) {
+        const clauseCard = document.querySelector(`[data-clause-index="${index}"]`);
+        const clause = button.dataset.clause;
+        const loading = clauseCard.querySelector('.loading-clause');
+        const result = clauseCard.querySelector('.simplified-result');
+        const originalText = button.innerHTML;
+        
+        // Show loading
+        loading.style.display = 'block';
+        result.style.display = 'none';
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        try {
+            const response = await fetch('/simplify_clause', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clause, settings })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                clauseCard.querySelector('.simplified-text').innerHTML = data.simplified;
+                result.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-check"></i> Simplified';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+            } else {
+                throw new Error(data.error || 'Failed to simplify');
+            }
+        } catch (error) {
+            clauseCard.querySelector('.simplified-text').innerHTML = `<span style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</span>`;
+            result.style.display = 'block';
+            button.innerHTML = '<i class="fas fa-redo"></i> Retry';
+        } finally {
+            loading.style.display = 'none';
+            button.disabled = false;
+        }
+    }
+
+    // Chat functionality
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        input.value = '';
+        addMessage('user', message);
+        showTyping(true);
+        
+        try {
+            const response = await fetch('/chat_document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message,
+                    document_context: documentText,
+                    chat_history: chatHistory.slice(-10), // Last 10 exchanges
+                    settings
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                addMessage('assistant', data.response);
+                chatHistory.push({ user: message, assistant: data.response });
+            } else {
+                throw new Error(data.error || 'Failed to get response');
+            }
+        } catch (error) {
+            addMessage('assistant', `<span style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</span>`);
+        } finally {
+            showTyping(false);
+        }
+    }
+
+    function addMessage(role, content) {
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
+        messageDiv.innerHTML = content;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function showTyping(show) {
+        const indicator = document.getElementById('typingIndicator');
+        indicator.style.display = show ? 'flex' : 'none';
+        if (show) {
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+    }
+
+    function handleChatKeydown(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function askQuickQuestion(question) {
+        document.getElementById('chatInput').value = question;
+        sendMessage();
+    }
+
+    function askAboutClause(index) {
+        const question = `Can you explain clause ${index + 1} and its implications?`;
+        document.getElementById('chatInput').value = question;
+        sendMessage();
+        
+        // Switch to chat if on mobile
+        if (window.innerWidth <= 1200) {
+            document.querySelector('.side-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function showEntityDetails(entityType, entityList) {
+        if (entityList.length === 0) return;
+        
+        let question;
+        const entityName = entityType.replace('_', ' ');
+        
+        if (entityList.length === 1) {
+            question = `Can you explain more about the ${entityName} "${entityList[0]}" found in this document?`;
+        } else {
+            question = `Can you explain the ${entityName} found in this document? Here are the ones I found: ${entityList.slice(0, 5).join(', ')}${entityList.length > 5 ? ` and ${entityList.length - 5} more` : ''}.`;
+        }
+        
+        document.getElementById('chatInput').value = question;
+        sendMessage();
+        
+        // Switch to chat if on mobile
+        if (window.innerWidth <= 1200) {
+            document.querySelector('.side-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Auto-resize chat input
+    document.getElementById('chatInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-expand first few clauses on desktop
+        if (window.innerWidth > 768) {
+            for (let i = 0; i < Math.min(3, clauses.length); i++) {
+                toggleClause(i);
+            }
+        }
+    });
+</script>
+{% endblock %}
