@@ -10,6 +10,9 @@
         height: calc(100vh - 120px);
         max-height: calc(100vh - 120px);
     }
+    .entity-card-obligations {
+    grid-column: span 2; /* makes it take double width */
+}
 
     .main-panel {
         background: white;
@@ -446,7 +449,8 @@
         <div class="tab-content active" id="entities-tab">
             <div class="entity-grid">
                 {% for entity_type, entity_list in entities.items() %}
-                <div class="entity-card" onclick="showEntityDetails('{{ entity_type }}', {{ entity_list|tojson|e }})">
+                <div class="entity-card {% if entity_type == 'obligations' %}entity-card-obligations{% endif %}" 
+     onclick="showEntityDetails('{{ entity_type }}', {{ entity_list|tojson|e }})">
                     <div class="entity-header">
                         <div class="entity-icon {{ entity_type }}">
                             {% if entity_type == 'dates' %}
@@ -460,22 +464,19 @@
                             {% elif entity_type == 'parties' %}
                                 <i class="fas fa-users"></i>
                             {% elif entity_type == 'obligations' %}
-                                <i class="fas fa-clipboard-check"></i>
+                                <i style="width: 500px;" class="fas fa-clipboard-check"></i>
                             {% elif entity_type == 'legal_terms' %}
                                 <i class="fas fa-gavel"></i>
                             {% endif %}
                         </div>
                         <div class="entity-count">{{ entity_list|length }}</div>
                         <div class="entity-label">{{ entity_type.replace('_', ' ') }}</div>
-                        {% if entity_list|length > 0 %}
-                            <span class="entity-badge">Click to explore</span>
-                        {% endif %}
                     </div>
                     
                     {% if entity_list %}
                         <div class="entity-body">
                             <div class="entity-list">
-                                {% for entity in entity_list[:4] %}
+                                {% for entity in entity_list[:10] %}
                                 <div class="entity-item 
                                     {%- if entity_type == 'monetary_values' %} monetary
                                     {%- elif entity_type == 'dates' %} date
@@ -486,12 +487,13 @@
                                     {%- endif %}">
                                     {{ entity }}
                                 </div>
+                                
                                 {% endfor %}
                             </div>
-                            {% if entity_list|length > 4 %}
+                            {% if entity_list|length > 10 %}
                                 <div class="entity-more">
                                     <i class="fas fa-plus-circle"></i>
-                                    {{ entity_list|length - 4 }} more {{ entity_type.replace('_', ' ') }}
+                                    {{ entity_list|length - 10 }} more {{ entity_type.replace('_', ' ') }}
                                 </div>
                             {% endif %}
                         </div>
@@ -826,3 +828,6 @@
     });
 </script>
 {% endblock %}
+
+
+
