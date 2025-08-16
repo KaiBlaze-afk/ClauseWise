@@ -1,225 +1,362 @@
-# ClauseWise
+# 🏛️ ClauseWise - Legal Document Analyzer
 
-**AI-Powered Legal Document Analysis Tool**
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
+[![IBM Granite](https://img.shields.io/badge/AI-IBM%20Granite%203.3-blue.svg)](https://ollama.ai)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-ClauseWise is a comprehensive legal document analysis platform that uses artificial intelligence to extract, categorize, and simplify complex legal documents. It helps legal professionals, business owners, and individuals understand contracts and legal agreements through intelligent entity extraction, clause analysis, and natural language processing.
+**ClauseWise** is a powerful AI-driven legal document analyzer that transforms complex legal documents into easy-to-understand insights. Built with IBM's Granite 3.3:2B language model, it provides intelligent clause analysis, entity extraction, and interactive AI assistance for legal professionals and anyone working with legal documents.
 
-## 🚀 Features
+## ✨ Key Features
 
-### 📊 Entity Extraction & Analysis
-- **Smart Detection**: Automatically identifies and categorizes key document elements
-- **Entity Types**: Dates, monetary values, parties, contact information, legal terms, obligations
-- **Interactive Exploration**: Click-to-explore modal interface with search and filtering
-- **Pattern Analysis**: Identifies duplicates, suspicious entries, and provides recommendations
+### 🤖 **AI-Powered Analysis**
+- **IBM Granite 3.3:2B Integration**: Leverages cutting-edge AI for accurate legal document understanding
+- **Document Classification**: Automatically identifies document types (NDA, Employment Agreement, etc.)
+- **Smart Clause Segmentation**: Intelligently breaks documents into analyzable sections
 
-### 🔍 Document Analysis
-- **Multi-Tab Interface**: Organized view of entities, clauses, and raw text
-- **Clause Breakdown**: Individual clause analysis with expand/collapse functionality
-- **AI Simplification**: Convert complex legal language into plain English
-- **Visual Categorization**: Color-coded entity types for easy identification
+### 🔍 **Advanced Entity Recognition**
+- **Parties & Organizations**: Identifies all legal entities, companies, and individuals
+- **Financial Information**: Extracts monetary values, payment terms, and financial obligations
+- **Critical Dates**: Finds deadlines, effective dates, and important timestamps
+- **Contact Information**: Captures email addresses and phone numbers
+- **Legal Obligations**: Highlights duties, responsibilities, and requirements
+- **Legal Terms**: Identifies and explains complex legal terminology
 
-### 🤖 AI Assistant Integration
-- **Contextual Chat**: Ask questions about document content and implications
-- **Quick Questions**: Pre-built queries for common legal concerns
-- **Real-time Analysis**: Instant responses about risks, obligations, and next steps
-- **Legal Guidance**: General legal advice with professional disclaimer
+### 💬 **Interactive AI Assistant**
+- **Document Q&A**: Ask specific questions about your legal document
+- **Risk Assessment**: Get insights on potential risks and liabilities
+- **Plain English Translation**: Complex clauses simplified into understandable language
+- **Context-Aware Responses**: AI maintains conversation history for better assistance
 
-### 📱 User Experience
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Modern Interface**: Clean, intuitive design with smooth animations
-- **Accessibility**: Keyboard shortcuts, tooltips, and screen reader support
-- **Export Capabilities**: Download entities as CSV, copy to clipboard
+### 📄 **Multi-Format Support**
+- **PDF Documents**: Full text extraction with formatting preservation
+- **Word Documents (.docx)**: Complete document structure analysis
+- **Text Files**: Direct text input and analysis
+- **Copy-Paste Interface**: Quick analysis without file uploads
 
-## 🛠️ Technology Stack
+## 🚀 Quick Start
 
-### Frontend
-- **HTML5/CSS3**: Modern semantic markup and responsive styling
-- **JavaScript (ES6+)**: Interactive functionality and API communication
-- **Font Awesome**: Professional icon library
-- **CSS Grid/Flexbox**: Advanced layout management
+### Prerequisites
 
-### Backend Integration
-- **RESTful API**: Clean endpoints for document processing
-- **AI Processing**: Integration with language models for analysis
-- **Real-time Communication**: WebSocket support for chat functionality
+- **Python 3.8+**
+- **Ollama** (for running local AI models)
+- **Git**
 
-### Key Components
-```
-├── Templates/
-│   ├── analysis_results.html    # Main analysis interface
-│   └── base.html               # Base template
-├── Static/
-│   ├── css/                   # Stylesheets
-│   ├── js/                    # JavaScript modules
-│   └── assets/                # Images and icons
-└── API/
-    ├── document_processor.py  # Document analysis engine
-    ├── entity_extractor.py   # Entity detection logic
-    └── ai_chat.py            # Chat assistant backend
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/clausewise.git
+cd clausewise
 ```
 
-## 🏗️ Architecture
+2. **Install Ollama**
+```bash
+# macOS/Linux
+curl -fsSL https://ollama.ai/install.sh | sh
 
-### Entity Processing Pipeline
-1. **Document Upload** → Parse and extract text content
-2. **NLP Analysis** → Apply named entity recognition and pattern matching
-3. **Categorization** → Sort entities into predefined types
-4. **Enrichment** → Add metadata, frequency analysis, and validation
-5. **Presentation** → Render in interactive UI components
-
-### Modal System
-- **Dynamic Content Generation**: Build modal content based on entity type
-- **Search & Filter**: Real-time filtering with performance optimization
-- **Export Functions**: Multiple format support (CSV, JSON, plain text)
-- **Accessibility**: Keyboard navigation and screen reader support
-
-## 📋 Entity Types
-
-| Type | Icon | Description | Examples |
-|------|------|-------------|----------|
-| **Dates** | 📅 | Contract dates, deadlines, milestones | `2024-01-15`, `March 31st, 2024` |
-| **Monetary Values** | 💰 | Amounts, fees, penalties | `$50,000`, `€25,000`, `₹1,00,000` |
-| **Parties** | 👥 | Individuals, companies, organizations | `ABC Corp`, `John Smith` |
-| **Contact Info** | 📧 | Email addresses, phone numbers | `legal@company.com`, `+1-555-0123` |
-| **Legal Terms** | ⚖️ | Legal concepts, clauses | `Force Majeure`, `Indemnification` |
-| **Obligations** | ✅ | Duties, requirements, responsibilities | `Payment due within 30 days` |
-
-## 🎨 UI Components
-
-### Entity Cards
-```html
-<div class="entity-card" onclick="showEntityModal('dates', entityList)">
-    <div class="entity-header">
-        <div class="entity-icon"><i class="fas fa-calendar-alt"></i></div>
-        <div class="entity-count">3</div>
-        <div class="entity-label">Dates</div>
-    </div>
-    <div class="entity-body">
-        <div class="entity-list"><!-- Entity items --></div>
-        <div class="entity-badge">Click to explore</div>
-    </div>
-</div>
+# Windows - Download from https://ollama.ai
 ```
 
-### Modal Interface
-- **Enhanced Search**: Real-time filtering with result counters
-- **Statistical Overview**: Total count, unique items, type-specific metrics
-- **Action Buttons**: Copy, export, generate reports
-- **Keyboard Support**: Escape to close, tab navigation
-
-### Chat Interface
-- **Message History**: Persistent conversation context
-- **Typing Indicators**: Visual feedback during AI processing
-- **Quick Questions**: One-click common queries
-- **Error Handling**: Graceful degradation and retry mechanisms
-
-## 🔧 Configuration
-
-### Settings Object
-```javascript
-const settings = {
-    api_endpoint: '/api/v1/',
-    max_entities: 100,
-    chat_history_limit: 10,
-    export_formats: ['csv', 'json', 'txt'],
-    ai_model: 'gpt-3.5-turbo',
-    entity_confidence_threshold: 0.8
-};
+3. **Start Ollama service**
+```bash
+ollama serve
 ```
 
-### Customization Options
-- **Theme Variables**: CSS custom properties for easy theming
-- **Entity Types**: Configurable entity categories and detection patterns
-- **AI Prompts**: Customizable system prompts for different document types
-- **Export Templates**: Configurable output formats and layouts
+4. **Run ClauseWise**
+```bash
+python run.py
+```
 
-## 📱 Responsive Design
+The startup script will automatically:
+- Install Python dependencies
+- Download the IBM Granite 3.3:2B model
+- Create necessary directories
+- Launch the web application at `http://localhost:5000`
 
-### Breakpoints
-- **Desktop**: `> 1200px` - Full two-column layout
-- **Tablet**: `768px - 1200px` - Stacked layout with collapsible sidebar
-- **Mobile**: `< 768px` - Single column with optimized touch targets
+### Manual Setup (Alternative)
 
-### Mobile Optimizations
-- **Touch-Friendly**: Larger tap targets and swipe gestures
-- **Performance**: Lazy loading and optimized animations
-- **Offline Support**: Service worker for basic functionality
+If you prefer manual installation:
 
-## ⚡ Performance Features
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-### Optimization Strategies
-- **Lazy Loading**: Load modal content on demand
-- **Debounced Search**: Optimized filtering with 300ms delay
-- **Virtual Scrolling**: Handle large entity lists efficiently
-- **Caching**: Store processed results in memory
+# Download the AI model
+ollama pull granite3.3:2b
 
-### Error Handling
-- **Graceful Degradation**: Fallback UI states for API failures
-- **User Feedback**: Toast notifications for all user actions
-- **Recovery Options**: Retry mechanisms and alternative workflows
+# Create directories
+mkdir -p templates temp_uploads
 
-## 🔒 Security Considerations
+# Start the application
+python app.py
+```
 
-### Data Protection
-- **No Persistent Storage**: All data handled in memory during session
-- **Sanitized Inputs**: XSS prevention for user-generated content
-- **API Security**: Token-based authentication for backend communication
-- **Privacy**: No data logging or external tracking
+## 🎯 Usage
 
-## 🚦 Browser Support
+### 1. **Upload Your Document**
+- **File Upload**: Drag and drop or browse for PDF, DOCX, or TXT files
+- **Direct Input**: Copy and paste document text directly into the interface
+- **Size Limit**: Up to 16MB per file
 
-### Supported Browsers
-- **Chrome**: Version 80+ (recommended)
-- **Firefox**: Version 75+
-- **Safari**: Version 13+
-- **Edge**: Version 80+
+### 2. **Analyze Results**
+Navigate through three comprehensive analysis views:
 
-### Required Features
-- ES6+ JavaScript support
-- CSS Grid and Flexbox
-- Fetch API
-- Local Storage (optional)
+#### **📊 Entities Tab**
+- View extracted legal entities in organized categories
+- Click on any entity group for detailed AI explanations
+- Visual metrics showing document complexity
 
-## 🎯 Usage Examples
+#### **📋 Clauses Tab**
+- Individual clause breakdown with smart segmentation
+- **Simplify Button**: Get plain English explanations of complex clauses
+- **Ask AI Button**: Query specific clauses for detailed analysis
 
-### Basic Document Analysis
-1. Upload document through the main interface
-2. Review extracted entities in the grid view
-3. Click entity cards to explore detailed breakdowns
-4. Use the AI chat for specific questions
+#### **📄 Raw Text Tab**
+- Complete document text with formatting preserved
+- Searchable and copyable content
 
-### Advanced Entity Exploration
-1. Open entity modal from the grid
-2. Use search to filter specific items
-3. Export entities in preferred format
-4. Generate AI-powered analysis reports
+### 3. **Interactive AI Chat**
+- Ask questions about document contents and implications
+- Get risk assessments and legal guidance
+- Use suggested questions for common legal inquiries
+- Maintain conversation context for follow-up questions
 
-### AI-Assisted Review
-1. Ask contextual questions about document content
-2. Request clause simplification
-3. Get risk assessments and recommendations
-4. Explore legal implications with guided prompts
+## 📁 Project Structure
+
+```
+clausewise/
+├── run.py                 # Smart startup script with dependency management
+├── app.py                 # Main Flask application with AI integration
+├── requirements.txt       # Python dependencies
+├── templates/
+│   ├── base.html         # Base template with modern UI components
+│   ├── index.html        # Upload interface with dual input methods
+│   └── results.html      # Analysis results with interactive features
+├── temp_uploads/         # Temporary file storage (auto-created)
+└── README.md            # This file
+```
+
+## 🛠️ Technical Architecture
+
+### **Backend Components**
+
+**Flask Application (`app.py`)**
+- Document processing pipeline with multi-format support
+- RESTful API endpoints for AI interactions
+- Advanced NLP for entity recognition using regex patterns
+- Secure file handling with automatic cleanup
+
+**AI Integration**
+- **Model**: IBM Granite 3.3:2B via Ollama
+- **Features**: Document classification, clause simplification, interactive chat
+- **Performance**: Optimized for real-time responses
+- **Scalability**: Configurable model parameters and hosting options
+
+**Document Processing**
+- **PDF**: `pdfplumber` for accurate text extraction
+- **DOCX**: `python-docx` for Word document processing  
+- **TXT**: UTF-8 text handling with error resilience
+- **Clause Segmentation**: Intelligent parsing using legal document patterns
+
+### **Frontend Components**
+
+**Modern UI (`base.html`)**
+- Responsive design with mobile-first approach
+- Custom CSS with gradient themes and animations
+- Modal dialogs for enhanced user experience
+- Accessibility features with proper contrast and semantics
+
+**Analysis Interface (`results.html`)**
+- Three-panel layout for comprehensive document review
+- Interactive entity visualization with hover effects
+- Collapsible clause sections for focused analysis
+- Real-time AI chat with typing indicators
+
+**Upload Interface (`index.html`)**
+- Dual input methods (file upload + text input)
+- Drag-and-drop functionality with visual feedback
+- File validation and progress indicators
+- Usage tips and feature explanations
+
+## ⚙️ Configuration
+
+### **Default Settings**
+
+```python
+DEFAULT_SETTINGS = {
+    'ollama_host': 'http://localhost:11434',
+    'model_name': 'granite3.3:2b',
+    'max_tokens': 512,
+    'temperature': 0.2
+}
+```
+
+### **Environment Variables** (Optional)
+
+```bash
+export CLAUSEWISE_MODEL="granite3.3:2b"
+export CLAUSEWISE_HOST="http://localhost:11434"
+export CLAUSEWISE_MAX_TOKENS="1024"
+export CLAUSEWISE_TEMPERATURE="0.1"
+```
+
+### **File Limits**
+
+- **Maximum file size**: 16MB
+- **Supported formats**: PDF, DOCX, TXT
+- **Concurrent uploads**: 1 per session
+- **Processing timeout**: 120 seconds
+
+## 🔧 Advanced Features
+
+### **Custom Model Integration**
+
+ClauseWise supports any Ollama-compatible model:
+
+```bash
+# Download alternative models
+ollama pull llama2:70b
+ollama pull mistral:7b
+ollama pull codellama:34b
+
+# Update model in app.py
+DEFAULT_SETTINGS['model_name'] = 'llama2:70b'
+```
+
+### **API Endpoints**
+
+- `POST /upload` - Document analysis endpoint
+- `POST /simplify_clause` - Clause simplification API
+- `POST /chat_document` - Interactive AI chat API
+
+### **Extended Entity Recognition**
+
+Current entity patterns support:
+- **Dates**: Multiple formats (MM/DD/YYYY, Month Day, Year, etc.)
+- **Money**: USD, INR, EUR, GBP with proper formatting
+- **Contacts**: Email addresses and international phone numbers
+- **Legal Terms**: 50+ common legal concepts and terminology
+- **Parties**: Organization types, roles, and relationship identifiers
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our contributing guidelines for:
-- Code style and formatting standards
-- Testing requirements and procedures
-- Documentation standards
-- Pull request process
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Make your changes**
+4. **Add tests** (if applicable)
+5. **Commit your changes**
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+6. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+7. **Open a Pull Request**
+
+### **Development Setup**
+
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+python -m pytest tests/
+
+# Run with debug mode
+export FLASK_ENV=development
+python app.py
+```
+
+## 📋 Requirements
+
+### **Python Dependencies**
+
+```txt
+flask>=2.0.0
+requests>=2.28.0
+werkzeug>=2.0.0
+python-docx>=0.8.11
+pdfplumber>=0.7.0
+```
+
+### **System Requirements**
+
+- **OS**: Windows 10+, macOS 10.15+, Linux (Ubuntu 20.04+)
+- **RAM**: 4GB minimum, 8GB recommended
+- **Storage**: 2GB for model + document storage
+- **Network**: Internet connection for initial model download
+
+## 🚨 Troubleshooting
+
+### **Common Issues**
+
+**1. Ollama Connection Error**
+```bash
+# Check if Ollama is running
+curl http://localhost:11434/api/tags
+
+# Start Ollama if not running
+ollama serve
+```
+
+**2. Model Not Found**
+```bash
+# List available models
+ollama list
+
+# Download Granite model
+ollama pull granite3.3:2b
+```
+
+**3. File Upload Errors**
+- Check file size (max 16MB)
+- Verify file format (PDF, DOCX, TXT only)
+- Ensure file is not corrupted
+
+**4. Python Dependencies**
+```bash
+# Reinstall requirements
+pip install --upgrade -r requirements.txt
+
+# Clear pip cache if needed
+pip cache purge
+```
+
+### **Debug Mode**
+
+Enable debug mode for detailed error information:
+
+```bash
+export FLASK_DEBUG=1
+python app.py
+```
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 🙏 Acknowledgments
 
-For support and questions:
-- **Documentation**: Check the inline code comments and this README
-- **Issues**: Report bugs via GitHub Issues
-- **Feature Requests**: Submit enhancement proposals
-- **Community**: Join our Discord server for discussions
+- **IBM Granite Team** - For the exceptional language model
+- **Ollama Project** - For the seamless local AI runtime
+- **Flask Community** - For the robust web framework
+- **Legal Tech Community** - For inspiration and feedback
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/clausewise/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/clausewise/discussions)
+- **Email**: support@clausewise.com
 
 ---
 
-**Built with ❤️ for the legal community** - Making legal documents accessible to everyone.
+**Built with ❤️ for the legal community**
+
+*Making legal documents accessible to everyone through the power of AI*
